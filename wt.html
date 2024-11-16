@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Progress Bar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .progress-container {
+            width: 80%;
+            height: 30px;
+            background-color: lightgray;
+            margin: 20px auto;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: blue;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <h1>Start Download</h1>
+    <button onclick="startDownload()">Start Download</button>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <script>
+        function startDownload() {
+            let progressBar = document.getElementById("progressBar");
+            let width = 0;
+            let interval = setInterval(function() {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    alert("Download completed");
+                } else {
+                    width += 5; // Increment by 5%
+                    progressBar.style.width = width + "%";
+                }
+            }, 1000); // 1 second interval
+        }
+    </script>
+</body>
+</html>

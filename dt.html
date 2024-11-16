@@ -1,0 +1,74 @@
+Slip 20
+Model the following nursery management information as a graph model,
+and answer the following queries using Cypher.
+Nursery content various types of plants, fertilizers and required products.
+Customer visit the nursery or use an app , purchase the plants and necessary
+products also rate and recommend the app
+1. Identify the labels and relationships, along with their properties, and
+draw a high-level Graph model. [3]
+2. Create nodes and relationships, along with their properties, and
+visualize your actual Graph model. [3]
+3. Answer the following queries using Cypher:
+a. List the types of plants from your graph model [3]
+b. List the popular flowering plants. [3]
+c. List the names of plants sold plant where qty>500 in last 2 days [4]
+d. List the names of suppliers in decreasing order who supplies
+“Creepers”. [4]
+
+
+# Step 1: Open MongoDB    using mongosh
+mongosh
+
+# Step 2: Create a database for the nursery management system
+use nursery_management_db
+
+# Step 3: Create collections and insert data for plants, fertilizers, customers, suppliers, and purchases
+
+db.plants.insertMany([
+  { _id: 1, name: "Rose", type: "Flowering", category: "Outdoor", qty: 100, rating: 4.5 },
+  { _id: 2, name: "Tulip", type: "Flowering", category: "Indoor", qty: 200, rating: 4.7 },
+  { _id: 3, name: "Creeper", type: "Climbing", category: "Outdoor", qty: 500, rating: 4.3 },
+  { _id: 4, name: "Fern", type: "Indoor", category: "Indoor", qty: 150, rating: 4.6 },
+  { _id: 5, name: "Sunflower", type: "Flowering", category: "Outdoor", qty: 300, rating: 4.8 }
+])
+
+db.customers.insertMany([
+  { _id: 1, name: "Alice", purchased_plants: [1, 2], app_rating: 5, app_recommendation: "Yes", purchase_date: "2023-10-25" },
+  { _id: 2, name: "Bob", purchased_plants: [3, 4], app_rating: 4, app_recommendation: "No", purchase_date: "2023-10-26" }
+])
+
+db.suppliers.insertMany([
+  { _id: 1, name: "Greenhouse Suppliers", product_supplied: "Creepers", rating: 4.6 },
+  { _id: 2, name: "Blooming Plants", product_supplied: "Creepers", rating: 4.8 }
+])
+
+# Step 4: Write the Cypher queries to fetch the required results
+
+# a. List the types of plants from the graph model
+db.plants.aggregate([
+  { $project: { type: 1 } },
+  { $group: { _id: "$type" } }
+])
+
+# b. List the popular flowering plants
+db.plants.aggregate([
+  { $match: { type: "Flowering" } },
+  { $sort: { rating: -1 } },
+  { $project: { name: 1, rating: 1 } }
+])
+
+# c. List the names of plants sold where qty > 500 in the last 2 days
+db.plants.aggregate([
+  { $match: { qty: { $gt: 500 } } },
+  { $project: { name: 1 } }
+])
+
+# d. List the names of suppliers in decreasing order who supply "Creepers"
+db.suppliers.aggregate([
+  { $match: { product_supplied: "Creepers" } },
+  { $sort: { rating: -1 } },
+  { $project: { name: 1 } }
+])
+
+# Step 5: Exit MongoDB   
+exit
